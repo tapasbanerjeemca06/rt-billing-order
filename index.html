@@ -123,7 +123,7 @@
       showFallbackInput();
       return;
     }
-    fetch(ITEMS_CSV_URL)
+    fetch("https://corsproxy.io/?" + encodeURIComponent(ITEMS_CSV_URL))
       .then(r => r.text())
       .then(csv => {
         const lines = csv.trim().split("\n").slice(1); // skip header
