@@ -8,14 +8,9 @@
         "gstin": "19AABCR1234F1ZK"
       },
       "branches": {
-        "1": {
-          "name": "Roytech Traders Pvt Ltd",
-          "gasUrl": "https://script.google.com/macros/s/AKfycbxbUxw-f45AjeEvWoXE5NpwkKsK1IJa-Nn86LGkHWXORIltzmlZKs3C9sZQ_eztoYQ/exec"
-        },
-        "3": {
-          "name": "RoyTech Solutions",
-          "gasUrl": "https://script.google.com/macros/s/AKfycbwLQ5rwwi-uvQvuedK-wZ1RdTXC0Jq-SvTz24_42Es6bXM1uWuL4AyBsUjEklIWyHI/exec"
-        }
+        "1": { "name": "Roytech Traders Pvt Ltd", "gasUrl": "https://script.google.com/macros/s/AKfycbxbUxw-f45AjeEvWoXE5NpwkKsK1IJa-Nn86LGkHWXORIltzmlZKs3C9sZQ_eztoYQ/exec" },
+        "2": { "name": "RoyTech Solutions", "gasUrl": "https://script.google.com/macros/s/AKfycbyCuts2yBsDOsL0sVAPjGqwXG-vpnM6gjDi85MOTXvL-RJW9OcvgS6E9MHFCfyLZQ/exec" },
+        "3": { "name": "RoyTech Solutions", "gasUrl": "https://script.google.com/macros/s/AKfycbwLQ5rwwi-uvQvuedK-wZ1RdTXC0Jq-SvTz24_42Es6bXM1uWuL4AyBsUjEklIWyHI/exec" }
       }
     }
   }
