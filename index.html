@@ -197,6 +197,14 @@
     const branch = allBranches[key];
     APPS_SCRIPT_URL = branch.gasUrl;
     document.getElementById("heroSub").textContent = "📍 " + branch.name + " — Fill in your details below.";
+    // Update header with branch-specific company info
+    document.getElementById("coName").textContent = branch.name;
+    document.title = branch.name;
+    const metaParts = [];
+    if (branch.address) metaParts.push(branch.address);
+    if (branch.phone)   metaParts.push("📞 " + branch.phone);
+    if (branch.gstin)   metaParts.push("GSTIN: " + branch.gstin);
+    document.getElementById("coMeta").innerHTML = metaParts.join("&nbsp;&nbsp;|&nbsp;&nbsp;");
     document.getElementById("formCard").style.display = "block";
     loadItems();
   }
