@@ -13,7 +13,7 @@
   .navbar .branch-name { font-size: 13px; color: #a0a8c0; margin-left: auto; }
   .hero { background: linear-gradient(135deg, #ff5722 0%, #ff8a50 100%); color: white; padding: 28px 24px 22px; text-align: center; }
   .hero h1 { font-size: 26px; font-weight: 700; }
-  .hero p  { font-size: 14px; margin-top: 6px; opacity: .85; }
+  .hero p { font-size: 14px; margin-top: 6px; opacity: .85; }
   .card { background: white; border-radius: 8px; padding: 24px; margin: 20px auto; max-width: 680px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
   .card h2 { font-size: 15px; font-weight: 700; color: #ff5722; border-left: 4px solid #ff5722; padding-left: 10px; margin-bottom: 18px; }
   .field { margin-bottom: 16px; }
@@ -57,6 +57,10 @@
   <p id="heroSub">Fill in your details below — we'll confirm your order shortly.</p>
 </div>
 
+<div class="card" id="loadingCard">
+  <div style="text-align:center;padding:40px;color:#6c757d;">⏳ Loading configuration...</div>
+</div>
+
 <div class="card" id="formCard" style="display:none;">
   <h2>📋 Order Details</h2>
   <form id="orderForm" onsubmit="submitOrder(event)">
@@ -84,15 +88,11 @@
   </form>
 </div>
 
-<div class="card" id="loadingCard">
-  <div style="text-align:center;padding:40px;color:#6c757d;">⏳ Loading branch configuration...</div>
-</div>
-
 <div class="card" id="errorCard" style="display:none;">
   <div class="error-card">
     <div style="font-size:48px;">⚠️</div>
-    <h2 style="margin:12px 0 8px;">Branch Not Found</h2>
-    <p id="errorMsg">This order link is invalid or the branch is not configured.</p>
+    <h2 style="margin:12px 0 8px;">Not Found</h2>
+    <p id="errorMsg">This order link is invalid or not configured.</p>
   </div>
 </div>
 
@@ -110,28 +110,37 @@
 <footer>Powered by <span>RT Billing</span> — Modern Billing System</footer>
 
 <script>
-  // config.json is hosted alongside this HTML — RT Billing auto-updates it via GitHub API
   const CONFIG_URL = "./config.json";
-
   let APPS_SCRIPT_URL = "";
   let itemsList = [];
-  let branchName = "";
 
   window.addEventListener("load", function () {
-    const branch = new URLSearchParams(window.location.search).get("branch");
+    const params = new URLSearchParams(window.location.search);
+    const client = params.get("client");
+    const branch = params.get("branch");
 
-    // Add cache-busting so config.json is always fresh
     fetch(CONFIG_URL + "?v=" + Date.now())
       .then(r => r.json())
       .then(cfg => {
-        const key = branch || Object.keys(cfg.branches)[0];
-        const branchCfg = cfg.branches[key];
-        if (!branchCfg) {
-          showError("Branch '" + key + "' not found in configuration.");
-          return;
+        let branchCfg = null;
+        let branchName = "";
+
+        if (client && cfg.clients && cfg.clients[client]) {
+          // Multi-client mode: ?client=xyz&branch=1
+          const clientCfg = cfg.clients[client];
+          const branchKey = branch || Object.keys(clientCfg.branches)[0];
+          branchCfg = clientCfg.branches[branchKey];
+          if (branchCfg) branchName = branchCfg.name;
+        } else if (cfg.branches) {
+          // Single-client mode: ?branch=1 (backward compatible)
+          const branchKey = branch || Object.keys(cfg.branches)[0];
+          branchCfg = cfg.branches[branchKey];
+          if (branchCfg) branchName = branchCfg.name;
         }
+
+        if (!branchCfg) { showError("Branch not found. Please check your order link."); return; }
+
         APPS_SCRIPT_URL = branchCfg.gasUrl;
-        branchName = branchCfg.name;
         document.getElementById("branchLabel").textContent = "📍 " + branchName;
         document.getElementById("heroSub").textContent = branchName + " — Fill in your details below.";
         document.title = "Order — " + branchName;
@@ -139,7 +148,7 @@
         document.getElementById("formCard").style.display = "block";
         loadItems();
       })
-      .catch(() => showError("Could not load branch configuration. Please try again later."));
+      .catch(() => showError("Could not load configuration. Please try again."));
   });
 
   function showError(msg) {
@@ -182,8 +191,7 @@
 
   function addRow() {
     const container = document.getElementById("itemsContainer");
-    const row = document.createElement("div");
-    row.className = "item-row";
+    const row = document.createElement("div"); row.className = "item-row";
     const sel = makeItemSelect();
     const qty = document.createElement("input");
     qty.type = "number"; qty.placeholder = "1"; qty.min = "1"; qty.value = "1"; qty.className = "itemQty";
@@ -204,8 +212,7 @@
     const qtys = document.querySelectorAll(".itemQty");
     const parts = [];
     for (let i = 0; i < names.length; i++) {
-      const n = names[i].value.trim();
-      const q = qtys[i].value.trim() || "1";
+      const n = names[i].value.trim(), q = qtys[i].value.trim() || "1";
       if (n) parts.push(n + " x" + q);
     }
     return parts.join(", ");
@@ -218,9 +225,8 @@
     const items = buildItemsString();
     const notes = document.getElementById("notes").value.trim();
     if (!items) { alert("Please select at least one item."); return; }
-    const timestamp = new Date().toISOString();
     const orderRef = "ORD-" + Date.now().toString().slice(-6);
-    const params = new URLSearchParams({ Timestamp: timestamp, CustomerName: name, Phone: phone, Items: items, Notes: notes, OrderRef: orderRef });
+    const params = new URLSearchParams({ Timestamp: new Date().toISOString(), CustomerName: name, Phone: phone, Items: items, Notes: notes, OrderRef: orderRef });
     const btn = document.getElementById("submitBtn");
     btn.disabled = true; btn.textContent = "Submitting...";
     fetch(APPS_SCRIPT_URL + "?" + params.toString())
