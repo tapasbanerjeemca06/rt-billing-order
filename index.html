@@ -152,15 +152,6 @@
   function setLang(lang) {
     currentLang = lang;
     document.querySelectorAll(".lang-btn").forEach(b => b.classList.toggle("active", b.textContent.trim() === (lang === "en" ? "EN" : lang === "bn" ? "বাং" : "हि")));
-    document.querySelectorAll(".itemName").forEach(sel => {
-      const cur = sel.value;
-      sel.innerHTML = '<option value="">' + (lang === "en" ? "-- Select Item --" : lang === "bn" ? "-- পণ্য বেছুন --" : "-- वस्तु चुনें --") + '</option>' +
-        itemsList.map(it => {
-          const label = (lang === "bn" && it.nameBn) ? it.nameBn : (lang === "hi" && it.nameHi) ? it.nameHi : it.name;
-          return `<option value="${it.name}">${label}</option>`;
-        }).join("");
-      sel.value = cur;
-    });
   }
 
   window.addEventListener("load", function () {
@@ -249,7 +240,7 @@
     fetch(APPS_SCRIPT_URL + "?action=getItems")
       .then(r => r.json())
       .then(data => {
-        itemsList = data.map(r => ({ name: r.name || "", nameBn: r.nameBn || "", nameHi: r.nameHi || "" })).filter(r => r.name !== "");
+        itemsList = data.map(r => ({ name: r.name || "", price: r.price || 0 })).filter(r => r.name !== "");
         document.getElementById("loadingItems").style.display = "none";
         document.getElementById("itemsContainer").innerHTML = "";
         document.getElementById("itemsContainer").style.display = "block";
@@ -272,12 +263,8 @@
     if (itemsList.length === 0) {
       sel.type = "text"; sel.placeholder = "Item name";
     } else {
-      const ph = currentLang === "bn" ? "-- পণ্য বেছুন --" : currentLang === "hi" ? "-- वस्तु चुনें --" : "-- Select Item --";
-      sel.innerHTML = `<option value="">${ph}</option>` +
-        itemsList.map(it => {
-          const label = (currentLang === "bn" && it.nameBn) ? it.nameBn : (currentLang === "hi" && it.nameHi) ? it.nameHi : it.name;
-          return `<option value="${it.name}">${label}</option>`;
-        }).join("");
+      sel.innerHTML = '<option value="">-- Select Item --</option>' +
+        itemsList.map(it => `<option value="${it.name}">${it.name}</option>`).join("");
     }
     return sel;
   }
