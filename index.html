@@ -309,28 +309,20 @@
     const timestamp = new Date().toISOString();
     const orderRef  = "ORD-" + Date.now().toString().slice(-6);
 
-    // Build a real <form> targeting hidden iframe — bypasses CORS completely
-    const f = document.createElement("form");
-    f.method  = "POST";
-    f.action  = APPS_SCRIPT_URL;
-    f.target  = "hidden_iframe";
-
-    const fields = { Timestamp: timestamp, CustomerName: name, Phone: phone,
-                     Items: items, Notes: notes, OrderRef: orderRef };
-    Object.keys(fields).forEach(k => {
-      const inp = document.createElement("input");
-      inp.type  = "hidden";
-      inp.name  = k;
-      inp.value = fields[k];
-      f.appendChild(inp);
+    // Use GET request with query string — bypasses all CORS/411 issues with GAS
+    const params = new URLSearchParams({
+      Timestamp:    timestamp,
+      CustomerName: name,
+      Phone:        phone,
+      Items:        items,
+      Notes:        notes,
+      OrderRef:     orderRef
     });
 
-    document.body.appendChild(f);
-    f.submit();
-    document.body.removeChild(f);
-
-    // Show success after short delay (GAS processes async)
-    setTimeout(() => showSuccess(orderRef), 1500);
+    const img = new Image();
+    img.src = APPS_SCRIPT_URL + "?" + params.toString();
+    img.onload = img.onerror = () => showSuccess(orderRef);
+    setTimeout(() => showSuccess(orderRef), 3000);
   }
 
   function showSuccess(ref) {
