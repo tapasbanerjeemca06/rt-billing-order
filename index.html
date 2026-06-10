@@ -199,6 +199,9 @@
   <p>Fill in your details below — we'll confirm your order shortly.</p>
 </div>
 
+<!-- Hidden iframe to absorb GAS redirect response (bypasses CORS completely) -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
 <!-- Form card -->
 <div class="card" id="formCard">
   <h2>📋 Order Details</h2>
@@ -262,9 +265,6 @@
 <footer>Powered by <span>RT Billing</span> — Modern Billing System</footer>
 
 <script>
-  // ── Google Apps Script Web App URL ────────────────────────────────────
-  // STEP: Deploy a Google Apps Script that writes to your Sheet
-  // Replace this URL with your deployed Apps Script URL
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfKB3dY2ihwaCTUyKMeAmYIga1UVzI35DUZ0SLQEYXdXkSO9LX9bzTnid2KDaY-xGj/exec";
 
   function addRow() {
@@ -299,48 +299,38 @@
 
   function submitOrder(e) {
     e.preventDefault();
-    const name   = document.getElementById("custName").value.trim();
-    const phone  = document.getElementById("phone").value.trim();
-    const items  = buildItemsString();
-    const notes  = document.getElementById("notes").value.trim();
+    const name  = document.getElementById("custName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const items = buildItemsString();
+    const notes = document.getElementById("notes").value.trim();
 
     if (!items) { alert("Please add at least one item."); return; }
-
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
 
     const timestamp = new Date().toISOString();
     const orderRef  = "ORD-" + Date.now().toString().slice(-6);
 
-    const payload = {
-      Timestamp:    timestamp,
-      CustomerName: name,
-      Phone:        phone,
-      Items:        items,
-      Notes:        notes,
-      OrderRef:     orderRef
-    };
+    // Build a real <form> targeting hidden iframe — bypasses CORS completely
+    const f = document.createElement("form");
+    f.method  = "POST";
+    f.action  = APPS_SCRIPT_URL;
+    f.target  = "hidden_iframe";
 
-    // Use form-encoded body with no-cors so GitHub Pages → GAS works without CORS errors
-    const formBody = Object.keys(payload)
-      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]))
-      .join("&");
-
-    fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formBody
-    })
-    .then(() => {
-      showSuccess(orderRef);
-    })
-    .catch(() => {
-      alert("Network error — please check your internet and try again.");
-      btn.disabled = false;
-      btn.textContent = "✅ Place Order";
+    const fields = { Timestamp: timestamp, CustomerName: name, Phone: phone,
+                     Items: items, Notes: notes, OrderRef: orderRef };
+    Object.keys(fields).forEach(k => {
+      const inp = document.createElement("input");
+      inp.type  = "hidden";
+      inp.name  = k;
+      inp.value = fields[k];
+      f.appendChild(inp);
     });
+
+    document.body.appendChild(f);
+    f.submit();
+    document.body.removeChild(f);
+
+    // Show success after short delay (GAS processes async)
+    setTimeout(() => showSuccess(orderRef), 1500);
   }
 
   function showSuccess(ref) {
