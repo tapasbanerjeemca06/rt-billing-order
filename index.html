@@ -7,185 +7,43 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; color: #212529; }
-
-  /* ── Navbar ── */
-  .navbar {
-    background: #1e1e2f;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .navbar { background: #1e1e2f; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
   .navbar .brand { font-size: 22px; font-weight: 700; color: #ff5722; }
   .navbar .tagline { font-size: 12px; color: #a0a8c0; margin-top: 2px; }
-
-  /* ── Hero strip ── */
-  .hero {
-    background: linear-gradient(135deg, #ff5722 0%, #ff8a50 100%);
-    color: white;
-    padding: 28px 24px 22px;
-    text-align: center;
-  }
+  .hero { background: linear-gradient(135deg, #ff5722 0%, #ff8a50 100%); color: white; padding: 28px 24px 22px; text-align: center; }
   .hero h1 { font-size: 26px; font-weight: 700; }
   .hero p  { font-size: 14px; margin-top: 6px; opacity: .85; }
-
-  /* ── Card ── */
-  .card {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    margin: 20px auto;
-    max-width: 680px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  }
-  .card h2 {
-    font-size: 15px;
-    font-weight: 700;
-    color: #ff5722;
-    border-left: 4px solid #ff5722;
-    padding-left: 10px;
-    margin-bottom: 18px;
-  }
-
-  /* ── Form fields ── */
+  .card { background: white; border-radius: 8px; padding: 24px; margin: 20px auto; max-width: 680px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+  .card h2 { font-size: 15px; font-weight: 700; color: #ff5722; border-left: 4px solid #ff5722; padding-left: 10px; margin-bottom: 18px; }
   .field { margin-bottom: 16px; }
-  .field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: #495057;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .field input, .field textarea, .field select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    font-size: 14px;
-    font-family: inherit;
-    background: #fafbfc;
-    transition: border-color .2s;
-  }
-  .field input:focus, .field textarea:focus, .field select:focus {
-    outline: none;
-    border-color: #ff5722;
-    background: white;
-  }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+  .field input, .field textarea, .field select { width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 5px; font-size: 14px; font-family: inherit; background: #fafbfc; transition: border-color .2s; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: #ff5722; background: white; }
   .field textarea { resize: vertical; min-height: 80px; }
-
-  /* ── Item rows ── */
-  .item-row {
-    display: grid;
-    grid-template-columns: 1fr 80px 36px;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .item-row input { margin: 0; }
-  .btn-remove {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    width: 32px; height: 32px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .btn-add {
-    background: #f0f0f0;
-    border: 1px dashed #aaa;
-    border-radius: 5px;
-    padding: 8px 14px;
-    font-size: 13px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 4px;
-    color: #495057;
-    transition: background .15s;
-  }
+  .item-row { display: grid; grid-template-columns: 1fr 80px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .item-row select, .item-row input { margin: 0; }
+  .btn-remove { background: #dc3545; color: white; border: none; border-radius: 4px; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .btn-add { background: #f0f0f0; border: 1px dashed #aaa; border-radius: 5px; padding: 8px 14px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 4px; color: #495057; transition: background .15s; }
   .btn-add:hover { background: #e0e0e0; }
-
-  /* ── Submit button ── */
-  .btn-submit {
-    width: 100%;
-    padding: 14px;
-    background: #ff5722;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: .3px;
-    transition: background .2s;
-  }
+  .btn-submit { width: 100%; padding: 14px; background: #ff5722; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: .3px; transition: background .2s; }
   .btn-submit:hover { background: #e64a19; }
   .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
-
-  /* ── Success screen ── */
-  .success-screen {
-    display: none;
-    text-align: center;
-    padding: 40px 24px;
-  }
+  .success-screen { display: none; text-align: center; padding: 40px 24px; }
   .success-icon { font-size: 64px; }
   .success-screen h2 { font-size: 22px; color: #198754; margin: 16px 0 8px; }
   .success-screen p  { color: #6c757d; font-size: 14px; }
-  .order-ref {
-    display: inline-block;
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 18px;
-    font-weight: 700;
-    color: #856404;
-    margin: 16px 0;
-  }
-  .btn-new-order {
-    margin-top: 20px;
-    padding: 10px 28px;
-    background: #ff5722;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* ── Hint text ── */
+  .order-ref { display: inline-block; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 20px; font-size: 18px; font-weight: 700; color: #856404; margin: 16px 0; }
+  .btn-new-order { margin-top: 20px; padding: 10px 28px; background: #ff5722; color: white; border: none; border-radius: 5px; font-size: 14px; font-weight: 700; cursor: pointer; }
   .hint { font-size: 11px; color: #6c757d; margin-top: 4px; }
   .required { color: #dc3545; }
-
-  /* ── Column headers for items ── */
-  .item-header {
-    display: grid;
-    grid-template-columns: 1fr 80px 36px;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #868e96;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 12px;
-    color: #aaa;
-  }
+  .item-header { display: grid; grid-template-columns: 1fr 80px 36px; gap: 8px; font-size: 11px; font-weight: 700; color: #868e96; text-transform: uppercase; margin-bottom: 4px; }
+  .loading-items { font-size: 12px; color: #6c757d; padding: 8px 0; }
+  footer { text-align: center; padding: 20px; font-size: 12px; color: #aaa; }
   footer span { color: #ff5722; font-weight: 700; }
 </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <div class="navbar">
   <div>
     <div class="brand">RT Billing</div>
@@ -193,21 +51,17 @@
   </div>
 </div>
 
-<!-- Hero -->
 <div class="hero">
   <h1>Place Your Order</h1>
   <p>Fill in your details below — we'll confirm your order shortly.</p>
 </div>
 
-<!-- Hidden iframe to absorb GAS redirect response (bypasses CORS completely) -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
-<!-- Form card -->
 <div class="card" id="formCard">
   <h2>📋 Order Details</h2>
   <form id="orderForm" onsubmit="submitOrder(event)">
 
-    <!-- Customer info -->
     <div class="field">
       <label>Your Name <span class="required">*</span></label>
       <input type="text" id="custName" placeholder="e.g. Rajesh Kumar" required>
@@ -215,12 +69,10 @@
 
     <div class="field">
       <label>Phone Number <span class="required">*</span></label>
-      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10"
-             pattern="[0-9]{10}" required>
+      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
       <div class="hint">We'll use this to match your account and send confirmation.</div>
     </div>
 
-    <!-- Items -->
     <div class="field">
       <label>Items <span class="required">*</span></label>
       <div class="item-header">
@@ -228,30 +80,21 @@
         <span>Qty</span>
         <span></span>
       </div>
-      <div id="itemsContainer">
-        <div class="item-row">
-          <input type="text" placeholder="e.g. Rice, Bread, Sugar" class="itemName">
-          <input type="number" placeholder="1" min="1" value="1" class="itemQty">
-          <button type="button" class="btn-remove" onclick="removeRow(this)">×</button>
-        </div>
-      </div>
-      <button type="button" class="btn-add" onclick="addRow()">+ Add Another Item</button>
+      <div id="loadingItems" class="loading-items">⏳ Loading items...</div>
+      <div id="itemsContainer" style="display:none;"></div>
+      <button type="button" class="btn-add" id="btnAddRow" onclick="addRow()" style="display:none;">+ Add Another Item</button>
     </div>
 
-    <!-- Notes -->
     <div class="field">
       <label>Special Notes / Remarks</label>
       <textarea id="notes" placeholder="Any special instructions, delivery address, etc."></textarea>
     </div>
 
-    <button type="submit" class="btn-submit" id="submitBtn">
-      ✅ Place Order
-    </button>
+    <button type="submit" class="btn-submit" id="submitBtn">✅ Place Order</button>
   </form>
 </div>
 
-<!-- Success screen -->
-<div class="card" id="successCard">
+<div class="card" id="successCard" style="display:none;">
   <div class="success-screen" id="successScreen">
     <div class="success-icon">🎉</div>
     <h2>Order Placed Successfully!</h2>
@@ -267,15 +110,69 @@
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyv5lnj2kOXiV5k_NE2808gUnvTPrBsg5VJ9O3jFsyOlzDwe96m7bZeo10rOsZKd4/exec";
 
+  // Published CSV URL of the Items sheet tab
+  // Format: same spreadsheet, but gid= of the Items sheet
+  // RT Billing will sync items to this sheet — update this URL after publishing Items tab
+  const ITEMS_CSV_URL = "ITEMS_CSV_URL_HERE";
+
+  let itemsList = [];
+
+  // Load items from Google Sheet Items tab on page load
+  window.addEventListener("load", function() {
+    if (ITEMS_CSV_URL === "ITEMS_CSV_URL_HERE") {
+      showFallbackInput();
+      return;
+    }
+    fetch(ITEMS_CSV_URL)
+      .then(r => r.text())
+      .then(csv => {
+        const lines = csv.trim().split("\n").slice(1); // skip header
+        itemsList = lines
+          .map(l => l.split(",")[0].replace(/"/g, "").trim())
+          .filter(n => n !== "");
+        if (itemsList.length === 0) { showFallbackInput(); return; }
+        document.getElementById("loadingItems").style.display = "none";
+        document.getElementById("itemsContainer").style.display = "block";
+        document.getElementById("btnAddRow").style.display = "block";
+        addRow(); // add first row
+      })
+      .catch(() => showFallbackInput());
+  });
+
+  function showFallbackInput() {
+    itemsList = [];
+    document.getElementById("loadingItems").style.display = "none";
+    document.getElementById("itemsContainer").style.display = "block";
+    document.getElementById("btnAddRow").style.display = "block";
+    addRow();
+  }
+
+  function makeItemSelect() {
+    if (itemsList.length === 0) {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.placeholder = "Item name";
+      inp.className = "itemName";
+      return inp;
+    }
+    const sel = document.createElement("select");
+    sel.className = "itemName";
+    sel.innerHTML = '<option value="">-- Select Item --</option>' +
+      itemsList.map(n => `<option value="${n}">${n}</option>`).join("");
+    return sel;
+  }
+
   function addRow() {
     const container = document.getElementById("itemsContainer");
     const row = document.createElement("div");
     row.className = "item-row";
-    row.innerHTML = `
-      <input type="text" placeholder="Item name" class="itemName">
-      <input type="number" placeholder="1" min="1" value="1" class="itemQty">
-      <button type="button" class="btn-remove" onclick="removeRow(this)">×</button>
-    `;
+    const sel = makeItemSelect();
+    const qty = document.createElement("input");
+    qty.type = "number"; qty.placeholder = "1"; qty.min = "1"; qty.value = "1"; qty.className = "itemQty";
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "btn-remove"; btn.textContent = "×";
+    btn.onclick = function() { removeRow(btn); };
+    row.appendChild(sel); row.appendChild(qty); row.appendChild(btn);
     container.appendChild(row);
   }
 
@@ -303,20 +200,14 @@
     const phone = document.getElementById("phone").value.trim();
     const items = buildItemsString();
     const notes = document.getElementById("notes").value.trim();
-
-    if (!items) { alert("Please add at least one item."); return; }
+    if (!items) { alert("Please select at least one item."); return; }
 
     const timestamp = new Date().toISOString();
     const orderRef  = "ORD-" + Date.now().toString().slice(-6);
 
-    // Use GET request with query string — bypasses all CORS/411 issues with GAS
     const params = new URLSearchParams({
-      Timestamp:    timestamp,
-      CustomerName: name,
-      Phone:        phone,
-      Items:        items,
-      Notes:        notes,
-      OrderRef:     orderRef
+      Timestamp: timestamp, CustomerName: name, Phone: phone,
+      Items: items, Notes: notes, OrderRef: orderRef
     });
 
     const img = new Image();
@@ -335,12 +226,8 @@
   function resetForm() {
     document.getElementById("orderForm").reset();
     const container = document.getElementById("itemsContainer");
-    container.innerHTML = `
-      <div class="item-row">
-        <input type="text" placeholder="e.g. Rice, Bread, Sugar" class="itemName">
-        <input type="number" placeholder="1" min="1" value="1" class="itemQty">
-        <button type="button" class="btn-remove" onclick="removeRow(this)">×</button>
-      </div>`;
+    container.innerHTML = "";
+    addRow();
     document.getElementById("submitBtn").disabled = false;
     document.getElementById("submitBtn").textContent = "✅ Place Order";
     document.getElementById("formCard").style.display = "block";
