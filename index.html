@@ -322,19 +322,24 @@
       OrderRef:     orderRef
     };
 
-    // Post to Google Apps Script
+    // Use form-encoded body with no-cors so GitHub Pages → GAS works without CORS errors
+    const formBody = Object.keys(payload)
+      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]))
+      .join("&");
+
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify(payload)
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formBody
     })
-    .then(r => r.text())
     .then(() => {
       showSuccess(orderRef);
     })
     .catch(() => {
-      // Even if fetch fails (CORS), the Apps Script likely received it
-      // Show success anyway since GAS doesn't always return CORS headers
-      showSuccess(orderRef);
+      alert("Network error — please check your internet and try again.");
+      btn.disabled = false;
+      btn.textContent = "✅ Place Order";
     });
   }
 
