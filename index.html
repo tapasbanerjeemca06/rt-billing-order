@@ -10,6 +10,7 @@
   .navbar { background: #1e1e2f; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
   .navbar .brand { font-size: 22px; font-weight: 700; color: #ff5722; }
   .navbar .tagline { font-size: 12px; color: #a0a8c0; margin-top: 2px; }
+  .navbar .branch-name { font-size: 13px; color: #a0a8c0; margin-left: auto; }
   .hero { background: linear-gradient(135deg, #ff5722 0%, #ff8a50 100%); color: white; padding: 28px 24px 22px; text-align: center; }
   .hero h1 { font-size: 26px; font-weight: 700; }
   .hero p  { font-size: 14px; margin-top: 6px; opacity: .85; }
@@ -21,23 +22,22 @@
   .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: #ff5722; background: white; }
   .field textarea { resize: vertical; min-height: 80px; }
   .item-row { display: grid; grid-template-columns: 1fr 80px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
-  .item-row select, .item-row input { margin: 0; }
   .btn-remove { background: #dc3545; color: white; border: none; border-radius: 4px; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .btn-add { background: #f0f0f0; border: 1px dashed #aaa; border-radius: 5px; padding: 8px 14px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 4px; color: #495057; transition: background .15s; }
-  .btn-add:hover { background: #e0e0e0; }
-  .btn-submit { width: 100%; padding: 14px; background: #ff5722; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: .3px; transition: background .2s; }
+  .btn-add { background: #f0f0f0; border: 1px dashed #aaa; border-radius: 5px; padding: 8px 14px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 4px; color: #495057; }
+  .btn-submit { width: 100%; padding: 14px; background: #ff5722; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background .2s; }
   .btn-submit:hover { background: #e64a19; }
   .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
   .success-screen { display: none; text-align: center; padding: 40px 24px; }
   .success-icon { font-size: 64px; }
   .success-screen h2 { font-size: 22px; color: #198754; margin: 16px 0 8px; }
-  .success-screen p  { color: #6c757d; font-size: 14px; }
+  .success-screen p { color: #6c757d; font-size: 14px; }
   .order-ref { display: inline-block; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 20px; font-size: 18px; font-weight: 700; color: #856404; margin: 16px 0; }
   .btn-new-order { margin-top: 20px; padding: 10px 28px; background: #ff5722; color: white; border: none; border-radius: 5px; font-size: 14px; font-weight: 700; cursor: pointer; }
   .hint { font-size: 11px; color: #6c757d; margin-top: 4px; }
   .required { color: #dc3545; }
   .item-header { display: grid; grid-template-columns: 1fr 80px 36px; gap: 8px; font-size: 11px; font-weight: 700; color: #868e96; text-transform: uppercase; margin-bottom: 4px; }
   .loading-items { font-size: 12px; color: #6c757d; padding: 8px 0; }
+  .error-card { text-align:center; padding:40px; color:#dc3545; }
   footer { text-align: center; padding: 20px; font-size: 12px; color: #aaa; }
   footer span { color: #ff5722; font-weight: 700; }
 </style>
@@ -49,49 +49,51 @@
     <div class="brand">RT Billing</div>
     <div class="tagline">Online Order Portal</div>
   </div>
+  <div class="branch-name" id="branchLabel"></div>
 </div>
 
 <div class="hero">
   <h1>Place Your Order</h1>
-  <p>Fill in your details below — we'll confirm your order shortly.</p>
+  <p id="heroSub">Fill in your details below — we'll confirm your order shortly.</p>
 </div>
 
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
-<div class="card" id="formCard">
+<div class="card" id="formCard" style="display:none;">
   <h2>📋 Order Details</h2>
   <form id="orderForm" onsubmit="submitOrder(event)">
-
     <div class="field">
       <label>Your Name <span class="required">*</span></label>
       <input type="text" id="custName" placeholder="e.g. Rajesh Kumar" required>
     </div>
-
     <div class="field">
       <label>Phone Number <span class="required">*</span></label>
       <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
       <div class="hint">We'll use this to match your account and send confirmation.</div>
     </div>
-
     <div class="field">
       <label>Items <span class="required">*</span></label>
-      <div class="item-header">
-        <span>Item Name</span>
-        <span>Qty</span>
-        <span></span>
-      </div>
+      <div class="item-header"><span>Item Name</span><span>Qty</span><span></span></div>
       <div id="loadingItems" class="loading-items">⏳ Loading items...</div>
       <div id="itemsContainer" style="display:none;"></div>
       <button type="button" class="btn-add" id="btnAddRow" onclick="addRow()" style="display:none;">+ Add Another Item</button>
     </div>
-
     <div class="field">
       <label>Special Notes / Remarks</label>
       <textarea id="notes" placeholder="Any special instructions, delivery address, etc."></textarea>
     </div>
-
     <button type="submit" class="btn-submit" id="submitBtn">✅ Place Order</button>
   </form>
+</div>
+
+<div class="card" id="loadingCard">
+  <div style="text-align:center;padding:40px;color:#6c757d;">⏳ Loading branch configuration...</div>
+</div>
+
+<div class="card" id="errorCard" style="display:none;">
+  <div class="error-card">
+    <div style="font-size:48px;">⚠️</div>
+    <h2 style="margin:12px 0 8px;">Branch Not Found</h2>
+    <p id="errorMsg">This order link is invalid or the branch is not configured.</p>
+  </div>
 </div>
 
 <div class="card" id="successCard" style="display:none;">
@@ -108,48 +110,67 @@
 <footer>Powered by <span>RT Billing</span> — Modern Billing System</footer>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyv5lnj2kOXiV5k_NE2808gUnvTPrBsg5VJ9O3jFsyOlzDwe96m7bZeo10rOsZKd4/exec";
+  // config.json is hosted alongside this HTML — RT Billing auto-updates it via GitHub API
+  const CONFIG_URL = "./config.json";
 
-  // Published CSV URL of the Items sheet tab
-  // Format: same spreadsheet, but gid= of the Items sheet
-  // RT Billing will sync items to this sheet — update this URL after publishing Items tab
-  const ITEMS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT8kIJtwAQ4I2le7-TcEsv6K2UXb3cRBRFg00ZXMPj3RQq336qyadwiG6PJ2uEuyOQHr6mTokGn-rwH/pub?gid=1596625632&single=true&output=csv";
-
+  let APPS_SCRIPT_URL = "";
   let itemsList = [];
+  let branchName = "";
 
-  // Load items from Google Sheet Items tab on page load
-  window.addEventListener("load", function() {
-    if (ITEMS_CSV_URL === "ITEMS_CSV_URL_HERE") {
-      showFallbackInput();
-      return;
-    }
+  window.addEventListener("load", function () {
+    const branch = new URLSearchParams(window.location.search).get("branch");
+
+    // Add cache-busting so config.json is always fresh
+    fetch(CONFIG_URL + "?v=" + Date.now())
+      .then(r => r.json())
+      .then(cfg => {
+        const key = branch || Object.keys(cfg.branches)[0];
+        const branchCfg = cfg.branches[key];
+        if (!branchCfg) {
+          showError("Branch '" + key + "' not found in configuration.");
+          return;
+        }
+        APPS_SCRIPT_URL = branchCfg.gasUrl;
+        branchName = branchCfg.name;
+        document.getElementById("branchLabel").textContent = "📍 " + branchName;
+        document.getElementById("heroSub").textContent = branchName + " — Fill in your details below.";
+        document.title = "Order — " + branchName;
+        document.getElementById("loadingCard").style.display = "none";
+        document.getElementById("formCard").style.display = "block";
+        loadItems();
+      })
+      .catch(() => showError("Could not load branch configuration. Please try again later."));
+  });
+
+  function showError(msg) {
+    document.getElementById("loadingCard").style.display = "none";
+    document.getElementById("errorCard").style.display = "block";
+    document.getElementById("errorMsg").textContent = msg;
+  }
+
+  function loadItems() {
     fetch(APPS_SCRIPT_URL + "?action=getItems")
       .then(r => r.json())
       .then(data => {
         itemsList = data.map(r => r.name).filter(n => n !== "");
-        if (itemsList.length === 0) { showFallbackInput(); return; }
         document.getElementById("loadingItems").style.display = "none";
         document.getElementById("itemsContainer").style.display = "block";
         document.getElementById("btnAddRow").style.display = "block";
-        addRow(); // add first row
+        addRow();
       })
-      .catch(() => showFallbackInput());
-  });
-
-  function showFallbackInput() {
-    itemsList = [];
-    document.getElementById("loadingItems").style.display = "none";
-    document.getElementById("itemsContainer").style.display = "block";
-    document.getElementById("btnAddRow").style.display = "block";
-    addRow();
+      .catch(() => {
+        itemsList = [];
+        document.getElementById("loadingItems").style.display = "none";
+        document.getElementById("itemsContainer").style.display = "block";
+        document.getElementById("btnAddRow").style.display = "block";
+        addRow();
+      });
   }
 
   function makeItemSelect() {
     if (itemsList.length === 0) {
       const inp = document.createElement("input");
-      inp.type = "text";
-      inp.placeholder = "Item name";
-      inp.className = "itemName";
+      inp.type = "text"; inp.placeholder = "Item name"; inp.className = "itemName";
       return inp;
     }
     const sel = document.createElement("select");
@@ -168,20 +189,19 @@
     qty.type = "number"; qty.placeholder = "1"; qty.min = "1"; qty.value = "1"; qty.className = "itemQty";
     const btn = document.createElement("button");
     btn.type = "button"; btn.className = "btn-remove"; btn.textContent = "×";
-    btn.onclick = function() { removeRow(btn); };
+    btn.onclick = function () { removeRow(btn); };
     row.appendChild(sel); row.appendChild(qty); row.appendChild(btn);
     container.appendChild(row);
   }
 
   function removeRow(btn) {
-    const rows = document.querySelectorAll(".item-row");
-    if (rows.length === 1) { alert("At least one item is required."); return; }
+    if (document.querySelectorAll(".item-row").length === 1) { alert("At least one item is required."); return; }
     btn.closest(".item-row").remove();
   }
 
   function buildItemsString() {
     const names = document.querySelectorAll(".itemName");
-    const qtys  = document.querySelectorAll(".itemQty");
+    const qtys = document.querySelectorAll(".itemQty");
     const parts = [];
     for (let i = 0; i < names.length; i++) {
       const n = names[i].value.trim();
@@ -193,27 +213,19 @@
 
   function submitOrder(e) {
     e.preventDefault();
-    const name  = document.getElementById("custName").value.trim();
+    const name = document.getElementById("custName").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const items = buildItemsString();
     const notes = document.getElementById("notes").value.trim();
     if (!items) { alert("Please select at least one item."); return; }
-
     const timestamp = new Date().toISOString();
-    const orderRef  = "ORD-" + Date.now().toString().slice(-6);
-
-    const params = new URLSearchParams({
-      Timestamp: timestamp, CustomerName: name, Phone: phone,
-      Items: items, Notes: notes, OrderRef: orderRef
-    });
-
+    const orderRef = "ORD-" + Date.now().toString().slice(-6);
+    const params = new URLSearchParams({ Timestamp: timestamp, CustomerName: name, Phone: phone, Items: items, Notes: notes, OrderRef: orderRef });
     const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
-
+    btn.disabled = true; btn.textContent = "Submitting...";
     fetch(APPS_SCRIPT_URL + "?" + params.toString())
       .then(() => showSuccess(orderRef))
-      .catch(() => showSuccess(orderRef)); // show success regardless — GAS received it
+      .catch(() => showSuccess(orderRef));
   }
 
   function showSuccess(ref) {
@@ -225,8 +237,7 @@
 
   function resetForm() {
     document.getElementById("orderForm").reset();
-    const container = document.getElementById("itemsContainer");
-    container.innerHTML = "";
+    document.getElementById("itemsContainer").innerHTML = "";
     addRow();
     document.getElementById("submitBtn").disabled = false;
     document.getElementById("submitBtn").textContent = "✅ Place Order";
@@ -234,6 +245,5 @@
     document.getElementById("successCard").style.display = "none";
   }
 </script>
-
 </body>
 </html>
