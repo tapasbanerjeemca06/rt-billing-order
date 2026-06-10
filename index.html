@@ -207,10 +207,13 @@
       Items: items, Notes: notes, OrderRef: orderRef
     });
 
-    const img = new Image();
-    img.src = APPS_SCRIPT_URL + "?" + params.toString();
-    img.onload = img.onerror = () => showSuccess(orderRef);
-    setTimeout(() => showSuccess(orderRef), 3000);
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    fetch(APPS_SCRIPT_URL + "?" + params.toString())
+      .then(() => showSuccess(orderRef))
+      .catch(() => showSuccess(orderRef)); // show success regardless — GAS received it
   }
 
   function showSuccess(ref) {
