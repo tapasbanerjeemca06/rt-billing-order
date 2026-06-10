@@ -31,6 +31,11 @@
   .branch-card select { width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 5px; font-size: 14px; background: #fafbfc; }
   .branch-card select:focus { outline: none; border-color: #ff5722; }
 
+  /* Language toggle */
+  .lang-bar { text-align: center; padding: 8px; background: white; border-bottom: 1px solid #eee; }
+  .lang-btn { border: 1px solid #dee2e6; background: #f8f9fa; border-radius: 4px; padding: 4px 12px; font-size: 12px; cursor: pointer; margin: 0 3px; font-family: inherit; }
+  .lang-btn.active { background: #ff5722; color: white; border-color: #ff5722; font-weight: 700; }
+
   .item-row { display: grid; grid-template-columns: 1fr 80px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
   .btn-remove { background: #dc3545; color: white; border: none; border-radius: 4px; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .btn-add { background: #f0f0f0; border: 1px dashed #aaa; border-radius: 5px; padding: 8px 14px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 4px; color: #495057; }
@@ -59,6 +64,13 @@
 <div class="co-header">
   <div class="co-name" id="coName">Loading...</div>
   <div class="co-meta" id="coMeta"></div>
+</div>
+
+<!-- Language bar -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('bn')">বাং</button>
+  <button class="lang-btn" onclick="setLang('hi')">हि</button>
 </div>
 
 <div class="hero">
@@ -132,9 +144,24 @@
 <script>
   const CONFIG_URL = "./config.json";
   let APPS_SCRIPT_URL = "";
-  let itemsList = [];
-  let allBranches = {};   // branchKey -> { name, gasUrl }
+  let itemsList = [];   // [{name, nameBn, nameHi}]
+  let allBranches = {};
   let currentBranchKey = "";
+  let currentLang = "en";
+
+  function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll(".lang-btn").forEach(b => b.classList.toggle("active", b.textContent.trim() === (lang === "en" ? "EN" : lang === "bn" ? "বাং" : "हि")));
+    document.querySelectorAll(".itemName").forEach(sel => {
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">' + (lang === "en" ? "-- Select Item --" : lang === "bn" ? "-- পণ্য বেছুন --" : "-- वस्तु चुনें --") + '</option>' +
+        itemsList.map(it => {
+          const label = (lang === "bn" && it.nameBn) ? it.nameBn : (lang === "hi" && it.nameHi) ? it.nameHi : it.name;
+          return `<option value="${it.name}">${label}</option>`;
+        }).join("");
+      sel.value = cur;
+    });
+  }
 
   window.addEventListener("load", function () {
     const token = new URLSearchParams(window.location.search).get("t");
@@ -222,7 +249,7 @@
     fetch(APPS_SCRIPT_URL + "?action=getItems")
       .then(r => r.json())
       .then(data => {
-        itemsList = data.map(r => r.name).filter(n => n !== "");
+        itemsList = data.map(r => ({ name: r.name || "", nameBn: r.nameBn || "", nameHi: r.nameHi || "" })).filter(r => r.name !== "");
         document.getElementById("loadingItems").style.display = "none";
         document.getElementById("itemsContainer").innerHTML = "";
         document.getElementById("itemsContainer").style.display = "block";
@@ -240,15 +267,18 @@
   }
 
   function makeItemSelect() {
-    if (itemsList.length === 0) {
-      const inp = document.createElement("input");
-      inp.type = "text"; inp.placeholder = "Item name"; inp.className = "itemName";
-      return inp;
-    }
-    const sel = document.createElement("select");
+    const sel = document.createElement(itemsList.length === 0 ? "input" : "select");
     sel.className = "itemName";
-    sel.innerHTML = '<option value="">-- Select Item --</option>' +
-      itemsList.map(n => `<option value="${n}">${n}</option>`).join("");
+    if (itemsList.length === 0) {
+      sel.type = "text"; sel.placeholder = "Item name";
+    } else {
+      const ph = currentLang === "bn" ? "-- পণ্য বেছুন --" : currentLang === "hi" ? "-- वस्तु चुনें --" : "-- Select Item --";
+      sel.innerHTML = `<option value="">${ph}</option>` +
+        itemsList.map(it => {
+          const label = (currentLang === "bn" && it.nameBn) ? it.nameBn : (currentLang === "hi" && it.nameHi) ? it.nameHi : it.name;
+          return `<option value="${it.name}">${label}</option>`;
+        }).join("");
+    }
     return sel;
   }
 
