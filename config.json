@@ -1,0 +1,22 @@
+{
+  "tokens": {
+    "abc123": {
+      "name": "RT Billing",
+      "company": {
+        "name": "Roytech Traders Pvt Ltd",
+        "address": "Your Business Address Here",
+        "phone": "1234567890",
+        "gstin": "YOUR_GSTIN_HERE"
+      },
+      "branches": {
+        "main": {
+          "name": "Main Branch",
+          "gasUrl": "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE",
+          "address": "Main Branch Address",
+          "phone": "9876543210",
+          "gstin": "BRANCH_GSTIN"
+        }
+      }
+    }
+  }
+}
