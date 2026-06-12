@@ -17,6 +17,14 @@
   .hero h1 { font-size: 22px; font-weight: 700; }
   .hero p { font-size: 13px; margin-top: 5px; opacity: .88; }
 
+  /* Tab Navigation */
+  .tab-nav { background: white; display: flex; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,.06); margin-bottom: 16px; }
+  .tab-btn { flex: 1; max-width: 340px; padding: 16px 24px; background: white; border: none; border-bottom: 3px solid transparent; font-size: 15px; font-weight: 600; color: #6c757d; cursor: pointer; transition: all .2s; }
+  .tab-btn:hover { color: #ff5722; background: #fafafa; }
+  .tab-btn.active { color: #ff5722; border-bottom-color: #ff5722; background: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
   .card { background: white; border-radius: 8px; padding: 24px; margin: 16px auto; max-width: 680px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
   .card h2 { font-size: 15px; font-weight: 700; color: #ff5722; border-left: 4px solid #ff5722; padding-left: 10px; margin-bottom: 18px; }
   .field { margin-bottom: 16px; }
@@ -50,7 +58,10 @@
   .error-card { text-align: center; padding: 40px; color: #dc3545; }
   footer { text-align: center; padding: 18px; font-size: 12px; color: #aaa; }
   footer span { color: #ff5722; font-weight: 700; }
-  .branch-badge { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 12px; font-size: 12px; margin-top: 6px; }
+  .priority-group { display: flex; gap: 12px; margin-top: 8px; }
+  .priority-radio { display: flex; align-items: center; gap: 6px; }
+  .priority-radio input[type="radio"] { width: auto; }
+  .priority-radio label { font-size: 13px; text-transform: none; margin: 0; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -62,8 +73,18 @@
 </div>
 
 <div class="hero">
-  <h1>🛒 Place Your Order</h1>
+  <h1 id="heroTitle">🛒 Place Your Order</h1>
   <p id="heroSub">Loading branch information...</p>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-nav" id="tabNav" style="display:none;">
+  <button class="tab-btn active" onclick="switchTab('orders')">
+    🛒 Place Order
+  </button>
+  <button class="tab-btn" onclick="switchTab('services')">
+    🔧 Request Service
+  </button>
 </div>
 
 <!-- Loading -->
@@ -78,32 +99,118 @@
   </select>
 </div>
 
-<!-- Order form -->
-<div class="card" id="formCard" style="display:none;">
-  <h2>📋 Order Details</h2>
-  <form id="orderForm" onsubmit="submitOrder(event)">
-    <div class="field">
-      <label>Your Name <span class="required">*</span></label>
-      <input type="text" id="custName" placeholder="e.g. Rajesh Kumar" required>
+<!-- ============== TAB 1: ORDER FORM ============== -->
+<div class="tab-content active" id="ordersTab">
+  <!-- Order form -->
+  <div class="card" id="formCard" style="display:none;">
+    <h2>📋 Order Details</h2>
+    <form id="orderForm" onsubmit="submitOrder(event)">
+      <div class="field">
+        <label>Your Name <span class="required">*</span></label>
+        <input type="text" id="custName" placeholder="e.g. Rajesh Kumar" required>
+      </div>
+      <div class="field">
+        <label>Phone Number <span class="required">*</span></label>
+        <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
+        <div class="hint">We'll use this to match your account and send confirmation.</div>
+      </div>
+      <div class="field">
+        <label>Items <span class="required">*</span></label>
+        <div class="item-header"><span>Item Name</span><span>Qty</span><span></span></div>
+        <div id="loadingItems" class="loading-items">⏳ Loading items...</div>
+        <div id="itemsContainer" style="display:none;"></div>
+        <button type="button" class="btn-add" id="btnAddRow" onclick="addRow()" style="display:none;">+ Add Another Item</button>
+      </div>
+      <div class="field">
+        <label>Special Notes / Remarks</label>
+        <textarea id="notes" placeholder="Any special instructions, delivery address, etc."></textarea>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">✅ Place Order</button>
+    </form>
+  </div>
+
+  <!-- Order Success -->
+  <div class="card" id="successCard" style="display:none;">
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Your order has been recorded. We'll process it shortly.</p>
+      <div class="order-ref" id="orderRef">Order #----</div>
+      <p>You will receive a call or WhatsApp confirmation on your registered number.</p>
+      <button class="btn-new-order" onclick="resetOrderForm()">Place Another Order</button>
     </div>
-    <div class="field">
-      <label>Phone Number <span class="required">*</span></label>
-      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
-      <div class="hint">We'll use this to match your account and send confirmation.</div>
+  </div>
+</div>
+
+<!-- ============== TAB 2: SERVICE REQUEST FORM ============== -->
+<div class="tab-content" id="servicesTab">
+  <!-- Service Request form -->
+  <div class="card" id="serviceFormCard" style="display:none;">
+    <h2>📞 Service Request Details</h2>
+    <form id="serviceForm" onsubmit="submitService(event)">
+      <div class="field">
+        <label>Customer Name <span class="required">*</span></label>
+        <input type="text" id="svcCustName" placeholder="e.g. Amit Sharma" required>
+      </div>
+      <div class="field">
+        <label>Contact Phone <span class="required">*</span></label>
+        <input type="tel" id="svcPhone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
+      </div>
+      <div class="field">
+        <label>Service Address</label>
+        <input type="text" id="svcAddress" placeholder="Complete address for service visit">
+      </div>
+      <div class="field">
+        <label>Service Required <span class="required">*</span></label>
+        <div id="loadingServices" class="loading-items">⏳ Loading services...</div>
+        <select id="svcService" style="display:none;" required>
+          <option value="">-- Select Service --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <div class="priority-group">
+          <div class="priority-radio">
+            <input type="radio" name="priority" id="priLow" value="Low">
+            <label for="priLow">Low</label>
+          </div>
+          <div class="priority-radio">
+            <input type="radio" name="priority" id="priNormal" value="Normal" checked>
+            <label for="priNormal">Normal</label>
+          </div>
+          <div class="priority-radio">
+            <input type="radio" name="priority" id="priHigh" value="High">
+            <label for="priHigh">High</label>
+          </div>
+          <div class="priority-radio">
+            <input type="radio" name="priority" id="priUrgent" value="Urgent">
+            <label for="priUrgent">Urgent</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Problem Description <span class="required">*</span></label>
+        <textarea id="svcProblem" placeholder="Describe the issue you're facing..." required></textarea>
+      </div>
+      <div class="field">
+        <label>Preferred Date</label>
+        <input type="date" id="svcDate">
+      </div>
+      <button type="submit" class="btn-submit" id="submitSvcBtn">✅ Submit Service Request</button>
+    </form>
+  </div>
+
+  <!-- Service Success -->
+  <div class="card" id="serviceSuccessCard" style="display:none;">
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>Service Request Submitted!</h2>
+      <p>Your service request has been recorded. Our team will contact you shortly.</p>
+      <div class="order-ref" id="serviceRef">Request #----</div>
+      <p>You will receive a call or WhatsApp confirmation on your registered number.</p>
+      <button class="btn-new-order" onclick="resetServiceForm()">Request Another Service</button>
     </div>
-    <div class="field">
-      <label>Items <span class="required">*</span></label>
-      <div class="item-header"><span>Item Name</span><span>Qty</span><span></span></div>
-      <div id="loadingItems" class="loading-items">⏳ Loading items...</div>
-      <div id="itemsContainer" style="display:none;"></div>
-      <button type="button" class="btn-add" id="btnAddRow" onclick="addRow()" style="display:none;">+ Add Another Item</button>
-    </div>
-    <div class="field">
-      <label>Special Notes / Remarks</label>
-      <textarea id="notes" placeholder="Any special instructions, delivery address, etc."></textarea>
-    </div>
-    <button type="submit" class="btn-submit" id="submitBtn">✅ Place Order</button>
-  </form>
+  </div>
 </div>
 
 <!-- Error -->
@@ -111,19 +218,7 @@
   <div class="error-card">
     <div style="font-size:48px;">⚠️</div>
     <h2 style="margin:12px 0 8px;">Not Found</h2>
-    <p id="errorMsg">This order link is invalid or not configured.</p>
-  </div>
-</div>
-
-<!-- Success -->
-<div class="card" id="successCard" style="display:none;">
-  <div class="success-screen">
-    <div class="success-icon">🎉</div>
-    <h2>Order Placed Successfully!</h2>
-    <p>Your order has been recorded. We'll process it shortly.</p>
-    <div class="order-ref" id="orderRef">Order #----</div>
-    <p>You will receive a call or WhatsApp confirmation on your registered number.</p>
-    <button class="btn-new-order" onclick="resetForm()">Place Another Order</button>
+    <p id="errorMsg">This link is invalid or not configured.</p>
   </div>
 </div>
 
@@ -133,22 +228,24 @@
   const CONFIG_URL = "./config.json";
   let APPS_SCRIPT_URL = "";
   let itemsList = [];
-  let allBranches = {};   // branchKey -> { name, gasUrl }
+  let servicesList = [];
+  let allBranches = {};
   let currentBranchKey = "";
+  let currentTab = "orders";
 
   window.addEventListener("load", function () {
     const token = new URLSearchParams(window.location.search).get("t");
-    if (!token) { showError("Invalid or missing order link. Please contact the shop."); return; }
+    if (!token) { showError("Invalid or missing link. Please contact the shop."); return; }
 
     fetch(CONFIG_URL + "?v=" + Date.now())
       .then(r => r.json())
       .then(cfg => {
         const clientCfg = cfg.tokens && cfg.tokens[token];
-        if (!clientCfg) { showError("This order link is invalid or has expired."); return; }
+        if (!clientCfg) { showError("This link is invalid or has expired."); return; }
 
         // Show company info
         const co = clientCfg.company || {};
-        document.getElementById("coName").textContent = co.name || clientCfg.name || "Order Portal";
+        document.getElementById("coName").textContent = co.name || clientCfg.name || "Portal";
         document.title = co.name || clientCfg.name || "Place Your Order";
         const metaParts = [];
         if (co.address) metaParts.push(co.address);
@@ -163,12 +260,11 @@
         if (branchKeys.length === 0) { showError("No branches configured. Please contact the shop."); return; }
 
         document.getElementById("loadingCard").style.display = "none";
+        document.getElementById("tabNav").style.display = "flex";
 
         if (branchKeys.length === 1) {
-          // Single branch — no dropdown, load directly
           selectBranch(branchKeys[0]);
         } else {
-          // Multiple branches — show dropdown
           const sel = document.getElementById("branchSelect");
           sel.innerHTML = branchKeys.map(k =>
             `<option value="${k}">${allBranches[k].name}</option>`
@@ -180,15 +276,34 @@
       .catch(() => showError("Could not load configuration. Please try again."));
   });
 
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+    
+    if (tab === "orders") {
+      document.querySelectorAll(".tab-btn")[0].classList.add("active");
+      document.getElementById("ordersTab").classList.add("active");
+      document.getElementById("heroTitle").textContent = "🛒 Place Your Order";
+    } else {
+      document.querySelectorAll(".tab-btn")[1].classList.add("active");
+      document.getElementById("servicesTab").classList.add("active");
+      document.getElementById("heroTitle").textContent = "🔧 Request Service";
+    }
+  }
+
   function onBranchChange() {
     const key = document.getElementById("branchSelect").value;
-    // Reset items when branch changes
     document.getElementById("itemsContainer").innerHTML = "";
     document.getElementById("itemsContainer").style.display = "none";
     document.getElementById("btnAddRow").style.display = "none";
     document.getElementById("loadingItems").style.display = "block";
     document.getElementById("formCard").style.display = "none";
+    document.getElementById("serviceFormCard").style.display = "none";
+    document.getElementById("svcService").style.display = "none";
+    document.getElementById("loadingServices").style.display = "block";
     itemsList = [];
+    servicesList = [];
     selectBranch(key);
   }
 
@@ -197,7 +312,6 @@
     const branch = allBranches[key];
     APPS_SCRIPT_URL = branch.gasUrl;
     document.getElementById("heroSub").textContent = "📍 " + branch.name + " — Fill in your details below.";
-    // Update header with branch-specific company info
     document.getElementById("coName").textContent = branch.name;
     document.title = branch.name;
     const metaParts = [];
@@ -206,7 +320,9 @@
     if (branch.gstin)   metaParts.push("GSTIN: " + branch.gstin);
     document.getElementById("coMeta").innerHTML = metaParts.join("&nbsp;&nbsp;|&nbsp;&nbsp;");
     document.getElementById("formCard").style.display = "block";
+    document.getElementById("serviceFormCard").style.display = "block";
     loadItems();
+    loadServices();
   }
 
   function showError(msg) {
@@ -236,6 +352,24 @@
         document.getElementById("itemsContainer").style.display = "block";
         document.getElementById("btnAddRow").style.display = "block";
         addRow();
+      });
+  }
+
+  function loadServices() {
+    document.getElementById("loadingServices").style.display = "block";
+    document.getElementById("svcService").style.display = "none";
+    fetch(APPS_SCRIPT_URL + "?action=getServices")
+      .then(r => r.json())
+      .then(data => {
+        servicesList = data.map(r => r.name).filter(n => n !== "");
+        const sel = document.getElementById("svcService");
+        sel.innerHTML = '<option value="">-- Select Service --</option>' +
+          servicesList.map(n => `<option value="${n}">${n}</option>`).join("");
+        document.getElementById("loadingServices").style.display = "none";
+        document.getElementById("svcService").style.display = "block";
+      })
+      .catch(() => {
+        document.getElementById("loadingServices").textContent = "⚠ Could not load services. Please try again.";
       });
   }
 
@@ -299,17 +433,59 @@
     const btn = document.getElementById("submitBtn");
     btn.disabled = true; btn.textContent = "Submitting...";
     fetch(APPS_SCRIPT_URL + "?" + params.toString())
-      .then(() => showSuccess(orderRef))
-      .catch(() => showSuccess(orderRef));
+      .then(() => showOrderSuccess(orderRef))
+      .catch(() => showOrderSuccess(orderRef));
   }
 
-  function showSuccess(ref) {
+  function submitService(e) {
+    e.preventDefault();
+    const name = document.getElementById("svcCustName").value.trim();
+    const phone = document.getElementById("svcPhone").value.trim();
+    const address = document.getElementById("svcAddress").value.trim();
+    const service = document.getElementById("svcService").value.trim();
+    const priority = document.querySelector('input[name="priority"]:checked').value;
+    const problem = document.getElementById("svcProblem").value.trim();
+    const date = document.getElementById("svcDate").value || "";
+    const branch = allBranches[currentBranchKey] ? allBranches[currentBranchKey].name : "";
+    
+    if (!service) { alert("Please select a service."); return; }
+    
+    const requestRef = "SVC-" + Date.now().toString().slice(-6);
+    const params = new URLSearchParams({
+      action: "submitService",
+      Timestamp: new Date().toISOString(),
+      CustomerName: name,
+      Phone: phone,
+      Address: address,
+      ServiceName: service,
+      Priority: priority,
+      Problem: problem,
+      PreferredDate: date,
+      RequestRef: requestRef,
+      Branch: branch,
+      Status: "New"
+    });
+    
+    const btn = document.getElementById("submitSvcBtn");
+    btn.disabled = true; btn.textContent = "Submitting...";
+    fetch(APPS_SCRIPT_URL + "?" + params.toString())
+      .then(() => showServiceSuccess(requestRef))
+      .catch(() => showServiceSuccess(requestRef));
+  }
+
+  function showOrderSuccess(ref) {
     document.getElementById("formCard").style.display = "none";
     document.getElementById("successCard").style.display = "block";
     document.getElementById("orderRef").textContent = ref;
   }
 
-  function resetForm() {
+  function showServiceSuccess(ref) {
+    document.getElementById("serviceFormCard").style.display = "none";
+    document.getElementById("serviceSuccessCard").style.display = "block";
+    document.getElementById("serviceRef").textContent = ref;
+  }
+
+  function resetOrderForm() {
     document.getElementById("orderForm").reset();
     document.getElementById("itemsContainer").innerHTML = "";
     addRow();
@@ -317,6 +493,14 @@
     document.getElementById("submitBtn").textContent = "✅ Place Order";
     document.getElementById("formCard").style.display = "block";
     document.getElementById("successCard").style.display = "none";
+  }
+
+  function resetServiceForm() {
+    document.getElementById("serviceForm").reset();
+    document.getElementById("submitSvcBtn").disabled = false;
+    document.getElementById("submitSvcBtn").textContent = "✅ Submit Service Request";
+    document.getElementById("serviceFormCard").style.display = "block";
+    document.getElementById("serviceSuccessCard").style.display = "none";
   }
 </script>
 </body>
