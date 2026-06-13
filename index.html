@@ -426,9 +426,12 @@
     const orderRef = "ORD-" + Date.now().toString().slice(-6);
     const params = new URLSearchParams({
       Timestamp: new Date().toISOString(),
-      CustomerName: name, Phone: phone,
-      Items: items, Notes: notes,
-      OrderRef: orderRef, Branch: branch
+      CustomerName: name, 
+      Phone: phone,
+      Items: items, 
+      Notes: notes,
+      OrderRef: orderRef, 
+      Branch: branch
     });
     const btn = document.getElementById("submitBtn");
     btn.disabled = true; btn.textContent = "Submitting...";
@@ -451,16 +454,19 @@
     if (!service) { alert("Please select a service."); return; }
     
     const requestRef = "SVC-" + Date.now().toString().slice(-6);
-    const notes = `Priority: ${priority}\nAddress: ${address}\nProblem: ${problem}\nPreferred Date: ${date}`;
     
     const params = new URLSearchParams({
       type: "serviceCall",
       Timestamp: new Date().toISOString(),
       CustomerName: name,
       Phone: phone,
+      Address: address,
       Service: service,
-      Notes: notes,
-      CallRef: requestRef
+      Priority: priority,
+      Problem: problem,
+      PreferredDate: date,
+      CallRef: requestRef,
+      Branch: branch
     });
     
     const btn = document.getElementById("submitSvcBtn");
