@@ -8,7 +8,7 @@
         "gstin": "19AABCR1234F1ZK"
       },
       "branches": {
-        "1": { "name": "Roytech Traders Pvt Ltd", "gasUrl": "https://script.google.com/macros/s/AKfycbzmVaWtNnUQReEWC2HMyb4S1TVKMB8CPWfLosp9kS-seFU-kOJJ65VsswR4jC2_WgMY/exec", "address": "12, Rabindra Sarani, Burrabazar", "phone": "033-22134567", "gstin": "19AABCR1234F1ZK" },
+        "1": { "name": "Roytech Traders Pvt Ltd", "gasUrl": "https://script.google.com/macros/s/AKfycbzuOyx5mMLJaPzmdAehWB6Hfe6Cto8nU9gTZSO0jrUNWf5th3mgemA0jLsl09dzSp4e/exec", "address": "12, Rabindra Sarani, Burrabazar", "phone": "033-22134567", "gstin": "19AABCR1234F1ZK" },
         "2": { "name": "RoyTech Solutions", "gasUrl": "https://script.google.com/macros/s/AKfycbx13jqT3oHsB1nGiPlHZNaJ15oj3RzsPvnM4yXPjM53WBOtyG5t58uxuuuSyqkvagk/exec", "address": "Plot 123, Industrial Area", "phone": "022-12345678", "gstin": "27AAACR5055K1Z5" },
         "3": { "name": "RoyTech Solutions", "gasUrl": "https://script.google.com/macros/s/AKfycbwLQ5rwwi-uvQvuedK-wZ1RdTXC0Jq-SvTz24_42Es6bXM1uWuL4AyBsUjEklIWyHI/exec", "address": "Plot 123, Industrial Area", "phone": "022-12345678", "gstin": "27AAACR5055K1Z5" }
       }
