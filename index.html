@@ -451,19 +451,16 @@
     if (!service) { alert("Please select a service."); return; }
     
     const requestRef = "SVC-" + Date.now().toString().slice(-6);
+    const notes = `Priority: ${priority}\nAddress: ${address}\nProblem: ${problem}\nPreferred Date: ${date}`;
+    
     const params = new URLSearchParams({
-      action: "submitService",
+      type: "serviceCall",
       Timestamp: new Date().toISOString(),
       CustomerName: name,
       Phone: phone,
-      Address: address,
-      ServiceName: service,
-      Priority: priority,
-      Problem: problem,
-      PreferredDate: date,
-      RequestRef: requestRef,
-      Branch: branch,
-      Status: "New"
+      Service: service,
+      Notes: notes,
+      CallRef: requestRef
     });
     
     const btn = document.getElementById("submitSvcBtn");
