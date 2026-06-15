@@ -455,17 +455,18 @@
     
     const requestRef = "SVC-" + Date.now().toString().slice(-6);
     
+    // ✅ FIXED: Use correct parameter names that match Google Apps Script
     const params = new URLSearchParams({
-      type: "serviceCall",
+      action: "submitService",           // ✅ ADD: Tell GAS which action to perform
       Timestamp: new Date().toISOString(),
       CustomerName: name,
       Phone: phone,
       Address: address,
-      Service: service,
+      ServiceName: service,              // ✅ FIXED: Was "Service", now "ServiceName"
       Priority: priority,
       Problem: problem,
       PreferredDate: date,
-      CallRef: requestRef,
+      RequestRef: requestRef,            // ✅ FIXED: Was "CallRef", now "RequestRef"
       Branch: branch
     });
     
